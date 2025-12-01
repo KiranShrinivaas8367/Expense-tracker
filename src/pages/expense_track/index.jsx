@@ -1,0 +1,96 @@
+import { useAddTransactions } from "../../hooks/useAddTransactions"
+import { useState } from "react";
+import { useGetTransactions } from "../../hooks/useGetTransactions";
+
+export const ExpenseTracker = () => {
+
+    const { addTransaction } = useAddTransactions();
+    const { transactions } = useGetTransactions();
+    console.log(transactions)
+    const [description, setDescription] = useState("");
+    const [transactionAmount, setTransactionAmount] = useState(0);
+    const [transactionType, setTransactionType] = useState("expense");
+
+    const formSubmit =  (e) => {
+        e.preventDefault();
+        addTransaction({
+            description, 
+            transactionAmount, 
+            transactionType
+        })
+    }
+    return (
+    <>
+        <div className="expense-tracker">
+            <div className="container">
+                <h1>Expense-tracker</h1>
+                <div className="balance">
+                    <h1>Current Balance</h1>
+                    <h2>$0.0</h2>
+                </div>
+                <div className="summary">
+                    <div className="income">
+                        <h4>Income</h4>
+                        <p>$0</p>
+                    </div>
+                    <div className="expenses">
+                        <h4>Expenses</h4>
+                        <p>$0</p>
+                    </div>
+                </div>
+                <form action="" className="add-transaction" onSubmit={formSubmit}>
+                    <input 
+                    type="text"
+                    placeholder="Description..." 
+                    required
+                    onChange={(e) => {
+                        setDescription(e.target.value)
+                    }}/>
+
+                    <input 
+                    type="nubmer" 
+                    placeholder="Amount"
+                    required 
+                    onChange={(e) => {
+                        setTransactionAmount(e.target.value)
+                    }}/>
+
+                    <input 
+                    type="radio" 
+                    id="expense" 
+                    value="expense" 
+                    checked={transactionType === "expense"}
+                    onChange={(e) => setTransactionType(e.target.value)}/>
+
+                    <label htmlFor="expense">Expense</label>
+
+                    <input 
+                    type="radio" 
+                    id="income" 
+                    value="income" 
+                    checked={transactionType === "income"}
+                    onChange={(e) => setTransactionType(e.target.value)}/>
+
+                    <label htmlFor="income">Income</label>
+
+                    <button type="submit">Add Transaction</button>
+                </form>
+            </div>
+        </div>
+
+        <div className="transactions">
+            <h2>Transactions</h2>
+            <ul>
+                {transactions.map((transaction) => {
+                    console.log(transaction)
+                    return <li>
+                        <h3>hello</h3>
+                        <h4>{transaction.description}</h4>
+                        </li>
+                })}
+            </ul>
+        </div>
+    </>
+    
+    )
+}
