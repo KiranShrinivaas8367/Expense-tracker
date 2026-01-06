@@ -1,49 +1,76 @@
 import { useEffect, useState } from "react"
-import { query,collection, where, orderBy, onSnapshot } from "firebase/firestore"
+import { query,collection, where, orderBy, onSnapshot, doc } from "firebase/firestore"
 import { db } from "../config/firebase-config"
 import { useGetUserInfo } from "./useGetUserInfo"
-import { subscribe } from "firebase/data-connect"
+// import { unsubscribe } from "firebase/data-connect"
 
-export const useGetTransactions = () => {
-    const [transactions, setTransactions] = useState([])
-    const transactionCollectionRef = collection(db,"transactions")
-    const { userID } = useGetUserInfo();
-
-    const getTransactions = async () => {
-    let unsubscribe;
-
-    try
+export const useGetTransactions = () => 
     {
-        const queryTransactions = query(
-            transactionCollectionRef,
-            where("userID", "==", userID),
-            orderBy("createdAt")
-        );
-
-        unsubscribe = onSnapshot(queryTransactions, (snapshot) =>{
-            console.log(snapshot);
-            let docs = [];
-
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const id = doc.id;
-                docs.push({...data, id});
+        const [transactions, setTransactions] = useState([])//docs is an array again pushing in transactions array
+        const [transactionTotals, setTransactionTotals] = useState({
+                balance: 0.0,
+                income: 0.0, 
+                expenses:0.0
             });
-            setTransactions(docs);
-        })
-    } 
-    catch(error){
-        console.error(error);        
-    }
+        const transactionCollectionRef = collection(db,"tranactions")
+        const { userID } = useGetUserInfo();
 
-    return () => unsubscribe;
-    };
+        const getTransactions = () => 
+        {
+            let unsubscribe;
+            try
+            {
+                const queryTransactions = query(
+                    transactionCollectionRef,
+                    where("userID", "==", userID),
+                    orderBy("createdAt")
+                );
 
-    useEffect(() => {
+                console.log(queryTransactions)
 
-        getTransactions();
+                unsubscribe = onSnapshot(queryTransactions, (snapshot) =>{
+                    console.log(snapshot);
+                    let docs = [];//empty array declaration
+                    let totalIncome = 0;
+                    let totalExpenses = 0;
+                
+                    snapshot.forEach((doc) => {
+                        // console.log(doc.data())
+                        const data = doc.data();
+                        const id = doc.id;
+                        console.log(data)
 
-    }, [])
+                        docs.push({...data, id});
 
-    return { transactions }
+                        if(data.transactionType == 'expense')
+                            totalExpenses+=Number(data.transactionAmount);
+                        else
+                            totalIncome+=Number(data.transactionAmount);
+                    });
+
+                    console.log(docs)
+                    setTransactions(docs);
+
+                    let balanceAmt = totalIncome - totalExpenses;
+                    setTransactionTotals({
+                        balance: balanceAmt,
+                        income:totalIncome,
+                        expenses:totalExpenses
+                    });
+                });
+            } 
+            catch(error){
+                console.error(error);        
+            }
+
+            return () => unsubscribe();
+        };
+
+        useEffect(() => {
+            return getTransactions();
+            
+        }, [])
+        console.log(transactions)
+        
+        return { transactions, transactionTotals };
 }
