@@ -6,7 +6,6 @@ import { ExpenseTracker } from './pages/expense_track'
 
 function App() {
 
-
   return (
     <div className='App'>
       <Router>
