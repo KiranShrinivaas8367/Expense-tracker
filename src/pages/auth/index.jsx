@@ -1,6 +1,6 @@
 import {auth, provider} from "../../config/firebase-config"
 import { signInWithPopup } from "firebase/auth"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Navigate } from "react-router-dom"
 import "./style.css";
 import { useGetUserInfo } from "../../hooks/useGetUserInfo";
 import { useEffect } from "react";
@@ -21,15 +21,22 @@ export const Auth = () => {
         navigate("/expense-tracker");
     }
 
-    useEffect(() => {
-        if(isAuth)
-            navigate("expense-tracker")
-        else
-        {
-            return <div className="login-page">
+    if(isAuth)
+        return <Navigate to="/expense-tracker" />;
+
+        return <div className="login-page">
             <p>Sign in Google</p>
             <button className="login-google-btn" onClick={signInWithGoogle}>Sign In</button>
         </div>
-        }
-    },[])
+    
+    //     if(isAuth)
+    //         navigate("expense-tracker")
+    //     else
+    //     {
+    //         <div className="login-page">
+    //         <p>Sign in Google</p>
+    //         <button className="login-google-btn" onClick={signInWithGoogle}>Sign In</button>
+    //     </div>
+    //     }
+
 }
