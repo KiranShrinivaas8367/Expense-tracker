@@ -6,6 +6,8 @@ import './App.css'
 import { ExpenseTracker } from './pages/expense_track'
 
 function App() {
+const Auth = lazy(() => import('./components/Auth'));
+const ExpenseTracker = lazy(() => import('./components/ExpenseTracker'));
 
   return (
     <div className='App'>
