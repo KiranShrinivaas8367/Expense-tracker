@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useGetTransactions } from "../../hooks/useGetTransactions";
 import { useGetUserInfo } from "../../hooks/useGetUserInfo";
 import { signOut } from "firebase/auth";
-import "./style.css"
+import "./style_exp.css"
 import { auth } from "../../config/firebase-config";
 import { useNavigate } from "react-router-dom";
 
@@ -46,28 +46,27 @@ export const ExpenseTracker = () => {
     }
 
     return (
-    <>
+    <div className="expense">
         <div className="expense-tracker">
             <div className="container">
                 <h1>{name}'s Expense-tracker</h1>
 
                 <div className="balance">
-                    <h1>Current Balance</h1>
+                    <h2>Current Balance</h2>
                     {balance>=0 ? 
-                    (<h2>${balance}</h2>):
-                    (<h2>-${-1*balance}</h2>)}
-                    
+                    (<h2>{balance}</h2>):
+                    (<h2>-{-1*balance}</h2>)}                    
                 </div>
 
                 <div className="summary">
                     <div className="income">
-                        <h4>Income</h4>
-                        <p>${income}</p>
+                        <h4>Income: <span>{income}</span></h4>
+                        
                     </div>
 
                     <div className="expenses">
-                        <h4>Expenses</h4>
-                        <p>${expenses}</p>
+                        <h4>Expense: <span>{expenses}</span></h4>
+                        
                     </div>
                 </div>
 
@@ -76,6 +75,7 @@ export const ExpenseTracker = () => {
                     type="text"
                     placeholder="Description..." 
                     value={description}
+                    className="text"
                     required
                     onChange={(e) => {
                         setDescription(e.target.value)
@@ -85,6 +85,7 @@ export const ExpenseTracker = () => {
                     type="nubmer" 
                     placeholder="Amount"
                     value={transactionAmount}
+                    className="number"
                     required 
                     onChange={(e) => {
                         setTransactionAmount(e.target.value)
@@ -96,7 +97,7 @@ export const ExpenseTracker = () => {
                     value="expense" 
                     checked={transactionType === "expense"}
                     onChange={(e) => setTransactionType(e.target.value)}/>
-                    <label htmlFor="expense">Expense</label>
+                    <label className="expense-label" htmlFor="expense">Expense</label>
 
                     <input 
                     type="radio" 
@@ -104,14 +105,14 @@ export const ExpenseTracker = () => {
                     value="income" 
                     checked={transactionType === "income"}
                     onChange={(e) => setTransactionType(e.target.value)}/>
-                    <label htmlFor="income">Income</label>
+                    <label className="income-label" htmlFor="income">Income</label>
 
                     <button type="submit">Add Transaction</button>
                 </form>
             </div>
 
             {profilePhoto && <div className="profile"> 
-            <img className="profile-photo" src={profilePhoto} alt="" />
+            <img className="profile-photo" src={profilePhoto} alt="Profile Pic not available" />
             <button className="sign-out-button" onClick={signUserOut}>
                 Sign Out
             </button>
@@ -120,19 +121,22 @@ export const ExpenseTracker = () => {
         </div>
 
         <div className="transactions">
-            <h2>Transactions</h2>
+            <div className="trans-header">
+                Transactions  
+            </div>
             <ul>
                 {transactions.map((transaction) => {
                     // console.log(transaction)
-                    const labelColor = transactionType === "income" ? "green": "red";
+                    const labelColorStyle = {color:  transaction.transactionType === "income" ? "green": "red"}
+                    // console.log(transactionType)
                     return <li>
                         <h4 >{transaction.description}</h4>
-                        <p>{transaction.transactionAmount} • <label style={{color: labelColor}}> {transaction.transactionType} </label>
+                        <p>{transaction.transactionAmount} • <label style={labelColorStyle}> {transaction.transactionType} </label>
                         </p>
                         </li>
                 })}
             </ul>
         </div>
-    </>
+    </div>
     )
 }
